@@ -1,0 +1,73 @@
+name: Pages
+
+# Ready but dormant: while the repository is private the job below is skipped.
+# To switch on after the owner makes the repo public: Settings > Pages > Source = "GitHub Actions".
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build site
+    if: github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Marketing dashboard (synthetic data)
+        working-directory: marketing-ga4-synthetic
+        run: |
+          pip install -e .
+          ga4-synth generate
+          ga4-synth report --out ../site/marketing
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: r-quarto
+      - uses: quarto-dev/quarto-actions/setup@v2
+      - name: R report
+        working-directory: r-quarto
+        run: |
+          quarto render report.qmd
+          mkdir -p ../site/r
+          cp report.html ../site/r/index.html
+      - name: Landing page
+        run: |
+          cat > site/index.html <<'HTML'
+          <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>analytics-labs</title></head>
+          <body style="font:16px/1.6 system-ui;max-width:42rem;margin:2rem auto;padding:0 16px">
+          <h1>analytics-labs</h1><p>DCtech. analytics lab. Public dataset (CC0) and synthetic data only.</p>
+          <ul><li><a href="r/">R / Quarto report: Palmer penguins</a></li><li><a href="marketing/">Marketing dashboard (synthetic data)</a></li></ul>
+          </body></html>
+          HTML
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

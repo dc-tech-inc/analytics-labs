@@ -1,0 +1,112 @@
+name: CI
+
+# Runs on pull requests and on pushes to main, so main always has a run.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python (ruff, pytest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: python/pyproject.toml
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: pytest
+      - name: Model and figure run end to end
+        run: |
+          python -m penguin_lab.cli model
+          python -m penguin_lab.cli figures --out ../outputs
+
+  marketing:
+    name: Marketing pipeline (ruff, pytest, report)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.13"]
+    defaults:
+      run:
+        working-directory: marketing-ga4-synthetic
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: pytest
+      - name: Generate synthetic exports and build the dashboard
+        run: |
+          ga4-synth generate
+          ga4-synth report
+      - uses: actions/upload-artifact@v7
+        if: matrix.python-version == '3.13'
+        with:
+          name: marketing-dashboard
+          path: marketing-ga4-synthetic/dist/
+
+  r-quarto:
+    name: R (testthat) and Quarto render
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: r-quarto
+    steps:
+      - uses: actions/checkout@v7
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: r-quarto
+      - uses: quarto-dev/quarto-actions/setup@v2
+      - name: testthat (also checks R against the numbers computed in Python)
+        run: Rscript tests/testthat.R
+      - name: Render the report
+        run: quarto render report.qmd
+      - uses: actions/upload-artifact@v7
+        with:
+          name: r-report
+          path: r-quarto/report.html
+
+  gitleaks:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GITLEAKS_VERSION: 8.30.1
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # scan the full history
+      - name: Download gitleaks and verify its sha256
+        run: |
+          base="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          tarball="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -sSfLO "$base/$tarball"
+          curl -sSfL "$base/gitleaks_${GITLEAKS_VERSION}_checksums.txt" | grep " $tarball\$" | sha256sum -c -
+          tar -xzf "$tarball" gitleaks
+      - run: ./gitleaks git --redact --verbose .
