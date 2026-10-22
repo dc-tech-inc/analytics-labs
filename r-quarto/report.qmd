@@ -1,0 +1,72 @@
+---
+title: "Palmer penguins: a statistical walk-through in R"
+subtitle: "DCtech. analytics lab"
+format:
+  html:
+    toc: true
+    embed-resources: true
+    code-fold: true
+    theme: cosmo
+execute:
+  warning: false
+---
+
+## Question
+
+Do the three Palmer Archipelago penguin species differ in flipper length, and how well does flipper length
+predict body mass? The same questions are answered in Python under `python/`; the test suites check that both
+implementations agree.
+
+**Data.** Palmer Station LTER penguin measurements (Gorman, Williams and Fraser, 2014; packaged by Horst, Hill and
+Gorman, 2020). Licence CC0 1.0. See `data/README.md` for the full citation.
+
+```{r}
+#| label: setup
+source("R/analysis.R")
+df <- load_penguins(file.path("..", "data", "penguins.csv"))
+```
+
+After keeping complete cases there are **`r nrow(df)`** birds.
+
+## Descriptive statistics
+
+```{r}
+#| label: summary
+knitr::kable(species_summary(df), digits = 2)
+```
+
+## Flipper length vs body mass
+
+```{r}
+#| label: fig-scatter
+#| fig-cap: "Flipper length against body mass. The grey line is one least-squares fit over all species."
+#| fig-alt: "Scatter plot. Body mass rises with flipper length; Gentoo penguins sit top right, Adelie bottom left."
+plot_flipper_mass(df)
+```
+
+## Does Adelie differ from Gentoo?
+
+```{r}
+#| label: welch
+w <- welch_test(df, "Adelie", "Gentoo")
+```
+
+Welch's two-sample t-test (no equal-variance assumption): Gentoo flippers are
+**`r round(-w$mean_diff, 1)` mm** longer on average, t = `r round(w$t, 1)`, df = `r round(w$df, 1)`,
+p < 1e-50. With this effect size the conclusion does not depend on the test chosen.
+
+## How much of body mass does flipper length explain?
+
+```{r}
+#| label: ols
+m <- mass_on_flipper(df)
+```
+
+Each extra millimetre of flipper goes with about **`r round(m$slope, 1)` g** more body mass
+(R² = `r round(m$r_squared, 2)`).
+
+## Limitations
+
+- Species is a confounder: the pooled slope is not the slope inside each species (about 33 g/mm for Adelie, 35 for Chinstrap, 54 for Gentoo, computed with the Python code).
+- Observational data from three islands over three years; no causal claim.
+- This is a teaching-size dataset (344 rows); results are illustrations of method, not findings.
