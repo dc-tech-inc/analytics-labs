@@ -1,0 +1,15 @@
+analytics-labs
+Copyright (c) 2026 DC TECH INC
+
+The MIT License in LICENSE covers the code and documentation in this repository.
+It does not cover the third-party data below.
+
+data/penguins.csv
+  Palmer Archipelago (Antarctica) penguin data, simplified by the palmerpenguins package.
+  License: CC0 1.0 Universal (public domain dedication), released in accordance with the
+  Palmer Station LTER Data Policy. https://creativecommons.org/publicdomain/zero/1.0/
+  Original source: Gorman KB, Williams TD, Fraser WR (2014). PLoS ONE 9(3):e90081.
+    https://doi.org/10.1371/journal.pone.0090081
+  Packaging: Horst AM, Hill AP, Gorman KB (2020). palmerpenguins, R package 0.1.0.
+    https://doi.org/10.5281/zenodo.3960218 · https://github.com/allisonhorst/palmerpenguins
+  Full citation and notes: data/README.md
