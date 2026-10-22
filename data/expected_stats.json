@@ -1,0 +1,18 @@
+{
+  "n_complete": 333,
+  "welch_flipper_adelie_gentoo": {
+    "a": "Adelie",
+    "b": "Gentoo",
+    "column": "flipper_length_mm",
+    "t": -33.50550409316242,
+    "df": 251.35093176349747,
+    "p_value": 1.0826422294487599e-94,
+    "mean_diff": -27.132554391619664
+  },
+  "ols_mass_on_flipper": {
+    "slope": 50.15326594224113,
+    "intercept": -5872.092682842825,
+    "r_squared": 0.7620921573403913,
+    "n": 333
+  }
+}
