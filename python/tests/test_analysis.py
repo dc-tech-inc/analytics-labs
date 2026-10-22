@@ -52,7 +52,7 @@ def test_expected_stats_file_is_current(df):
     fresh = json.loads(json.dumps(expected_stats(df)))
     for section in ("welch_flipper_adelie_gentoo", "ols_mass_on_flipper"):
         for key, value in fresh[section].items():
-            # last-digit float differences between platforms are expected; 1e-9 is far below the R tolerance
+            # last-digit float differences across platforms are expected
             assert on_disk[section][key] == pytest.approx(value, rel=1e-9), (section, key)
     assert on_disk["n_complete"] == fresh["n_complete"]
 
