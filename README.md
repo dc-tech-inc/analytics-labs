@@ -11,6 +11,8 @@ Console and Ads exports into a static dashboard.
 > The marketing pipeline runs only on **synthetic data** produced by a seeded script, shaped like the real exports.
 > No real client, site or Google account was used, and the dashboard says so on screen.
 
+The static dashboard for the synthetic pipeline is published with GitHub Pages at **https://dc-tech-inc.github.io/analytics-labs/** (see [ADR 0004](docs/adr/0004-static-dashboard-and-pages.md)).
+
 ## What is here
 
 | Folder | What it proves | Run it |
