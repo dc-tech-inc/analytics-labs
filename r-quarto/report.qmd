@@ -26,7 +26,7 @@ source("R/analysis.R")
 df <- load_penguins(file.path("..", "data", "penguins.csv"))
 ```
 
-After keeping complete cases there are **`r nrow(df)`** birds.
+After keeping complete cases there are `r nrow(df)` birds.
 
 ## Descriptive statistics
 
@@ -52,7 +52,7 @@ w <- welch_test(df, "Adelie", "Gentoo")
 ```
 
 Welch's two-sample t-test (no equal-variance assumption): Gentoo flippers are
-**`r round(-w$mean_diff, 1)` mm** longer on average, t = `r round(w$t, 1)`, df = `r round(w$df, 1)`,
+`r round(-w$mean_diff, 1)` mm longer on average, t = `r round(w$t, 1)`, df = `r round(w$df, 1)`,
 p < 1e-50. With this effect size the conclusion does not depend on the test chosen.
 
 ## How much of body mass does flipper length explain?
@@ -62,7 +62,7 @@ p < 1e-50. With this effect size the conclusion does not depend on the test chos
 m <- mass_on_flipper(df)
 ```
 
-Each extra millimetre of flipper goes with about **`r round(m$slope, 1)` g** more body mass
+Each extra millimetre of flipper goes with about `r round(m$slope, 1)` g more body mass
 (R² = `r round(m$r_squared, 2)`).
 
 ## Limitations

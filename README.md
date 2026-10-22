@@ -3,15 +3,15 @@
 [![CI](https://github.com/dc-tech-inc/analytics-labs/actions/workflows/ci.yml/badge.svg)](https://github.com/dc-tech-inc/analytics-labs/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A small analytics lab by [DCtech.](https://dctech.live): the same statistical analysis done twice, in **R with Quarto**
-and in **Python with scikit-learn**, plus a **marketing reporting pipeline** that turns GA4-style events, Search
+A small analytics lab by [DCtech.](https://dctech.live): the same statistical analysis done twice, in R with Quarto
+and in Python with scikit-learn, plus a marketing reporting pipeline that turns GA4-style events, Search
 Console and Ads exports into a static dashboard.
 
 > **Data honesty.** The statistics use a public dataset with a clear licence (Palmer penguins, CC0 1.0).
 > The marketing pipeline runs only on **synthetic data** produced by a seeded script, shaped like the real exports.
 > No real client, site or Google account was used, and the dashboard says so on screen.
 
-The static dashboard for the synthetic pipeline is published with GitHub Pages at **https://dc-tech-inc.github.io/analytics-labs/** (see [ADR 0004](docs/adr/0004-static-dashboard-and-pages.md)).
+The static dashboard for the synthetic pipeline is published with GitHub Pages at https://dc-tech-inc.github.io/analytics-labs/ (see [ADR 0004](docs/adr/0004-static-dashboard-and-pages.md)).
 
 ## What is here
 
@@ -39,7 +39,7 @@ flowchart LR
   pipe --> dash["dist/index.html\n(static, no script)"]
 ```
 
-The two implementations are not just parallel: Python writes `data/expected_stats.json`, and the R tests assert that R
+Python writes `data/expected_stats.json`, and the R tests assert that R
 reproduces the same Welch statistic and regression coefficients to 1e-8. A Python test fails if that file goes stale.
 
 ## Run it
@@ -109,7 +109,7 @@ of the sessionization.
 
 ## Seção curta em português
 
-Laboratório de análise da **DCtech.**: a mesma análise estatística em R (Quarto) e em Python (scikit-learn), mais um
+Laboratório de análise da DCtech.: a mesma análise estatística em R (Quarto) e em Python (scikit-learn), mais um
 pipeline de relatório de marketing no formato do export do GA4. Os dados estatísticos são públicos (CC0); os de
 marketing são **sintéticos**, gerados por um script com semente. Nenhum dado real de cliente ou conta Google foi usado.
 Rode `make` para Python e marketing; `make r` exige R e Quarto.

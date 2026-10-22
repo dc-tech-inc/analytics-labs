@@ -8,7 +8,7 @@
 - **Packaging:** Horst AM, Hill AP, Gorman KB (2020). *palmerpenguins: Palmer Archipelago (Antarctica) penguin data.*
   R package version 0.1.0. <https://doi.org/10.5281/zenodo.3960218>, <https://github.com/allisonhorst/palmerpenguins>
 - **License:** CC0 1.0 (public domain dedication), released in accordance with the Palmer Station LTER Data Policy.
-  Redistribution is allowed; please keep this citation.
+  Redistribution is allowed; keep this citation.
 - **Missing values:** written as `NA`; the analyses use complete cases only (333 rows).
 
 `expected_stats.json` is produced by the Python code (`python -m penguin_lab.cli stats`) and is read by the R tests,
